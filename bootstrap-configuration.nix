@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ 
+  imports = [
     ./hardware-configuration.nix
   ];
 
@@ -26,8 +26,18 @@
   # Tailscale for reliable remote access
   services.tailscale.enable = true;
 
-  # Root password
-  users.users.root.initialPassword = "test123";
+  # Root user with password "test123"
+  users.users.root.hashedPassword = "$6$JLw2//9Qs.h.pQgo$debvCXuaHEQrwz3s2nNITyF3pU4hqd3IIEls9aUqJMZ5Um.5rjMDqv7SqBEu76bEeZHLXlaG3IeD0RsSWmtlx0";
+
+  # Keep nixos user (Hetzner default) with sudo access
+  users.users.nixos = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+    hashedPassword = "$6$JLw2//9Qs.h.pQgo$debvCXuaHEQrwz3s2nNITyF3pU4hqd3IIEls9aUqJMZ5Um.5rjMDqv7SqBEu76bEeZHLXlaG3IeD0RsSWmtlx0";
+  };
+
+  # Allow wheel group to sudo
+  security.sudo.wheelNeedsPassword = false;
 
   # Firewall - allow SSH
   networking.firewall.allowedTCPPorts = [ 22 ];
@@ -39,25 +49,6 @@
     curl
     tailscale
   ];
-
-  # Clone the configuration repo on first boot
-  systemd.services.clone-amnezia-config = {
-    description = "Clone AmneziaWG configuration";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = ''
-        ${pkgs.bash}/bin/bash -c '
-          if [ ! -d /root/nix-amnezia ]; then
-            cd /root && ${pkgs.git}/bin/git clone https://github.com/madnificent/nix-amnezia.git 2>/dev/null || true
-          fi
-        '
-      '';
-      RemainAfterExit = true;
-    };
-  };
 
   system.stateVersion = "24.11";
 }
