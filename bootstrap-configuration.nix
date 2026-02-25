@@ -19,7 +19,7 @@
     ports = [ 10022 ];
     settings = {
       PermitRootLogin = "yes";
-      PasswordAuthentication = "yes";
+      PasswordAuthentication = true;
     };
   };
 
