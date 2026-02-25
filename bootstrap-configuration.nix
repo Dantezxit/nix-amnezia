@@ -13,27 +13,31 @@
   networking.hostName = "amnezia-server";
   networking.useDHCP = true;
 
-  # SSH on custom port 10022
+  # SSH on default port 22 for initial setup
   services.openssh = {
     enable = true;
-    ports = [ 10022 ];
+    ports = [ 22 ];
     settings = {
       PermitRootLogin = "yes";
       PasswordAuthentication = true;
     };
   };
 
+  # Tailscale for reliable remote access
+  services.tailscale.enable = true;
+
   # Root password
   users.users.root.initialPassword = "test123";
 
-  # Firewall - allow SSH on port 10022
-  networking.firewall.allowedTCPPorts = [ 10022 ];
+  # Firewall - allow SSH
+  networking.firewall.allowedTCPPorts = [ 22 ];
 
   # Install git and essential tools
   environment.systemPackages = with pkgs; [
     git
     vim
     curl
+    tailscale
   ];
 
   # Clone the configuration repo on first boot
