@@ -30,11 +30,10 @@
   networking.firewall.allowedTCPPorts = [ 10022 ];
 
   # Install git and essential tools
-  environment.systemPackages = with pkgs; [ 
+  environment.systemPackages = with pkgs; [
     git
-    vim 
-    wget 
-    curl 
+    vim
+    curl
   ];
 
   # Clone the configuration repo on first boot
